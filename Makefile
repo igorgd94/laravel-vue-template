@@ -26,11 +26,13 @@ vite:
 	docker compose exec app npm run dev
 
 install:
-	cp -n .env.example src/.env
-	docker compose up -d
+	docker compose up -d --build
+	docker compose exec app sh -c "[ -f .env ] || cp .env.example .env"
 	docker compose exec app composer install
 	docker compose exec app npm install
+	docker compose exec app chmod -R 777 .
 	docker compose exec app php artisan key:generate
+	docker compose exec app php artisan optimize:clear
 
 artisan:
 	docker compose exec app php artisan
